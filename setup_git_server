@@ -1,0 +1,95 @@
+#!/bin/bash
+user=$1
+domain=$2
+repo=$3
+serverip=`hostname -I | cut -d' ' -f1`
+basedir=`pwd`
+
+prereq () {
+	# Setup prerequisites
+	echo ""
+	echo "Setup Prerequisites"
+	echo "------------------------"
+	apt update && apt install -y nginx git fcgiwrap apache2-utils unzip
+	echo "------------------------"
+	echo "Prerequisites Complete."
+	echo ""
+}
+
+setup_git () {
+	# Setup git
+	cd $basedir
+	echo ""
+	echo "Setup git"
+	echo "------------------------"
+	#git config --global user.email "timjae@gmail.com"
+	#git config --global user.name "Timothy Jordan"
+	#git config --global core.editor vim
+	mkdir -p /var/www/git/$user/$repo.git
+	cd /var/www/git/$user/$repo.git
+	git --bare init
+	git update-server-info
+	chown -R www-data:www-data /var/www/git
+	chmod 0755 /var/www/git/$user
+	htpasswd -c /var/www/git/.htpasswd $user
+	echo "------------------------"
+	echo "git Setup Complete"
+	echo ""
+}
+
+setup_nginx () {
+	# Create nginx site configuration
+	cd $basedir
+	echo ""
+	echo "Setup nginx site configuration"
+	echo "------------------------"
+
+	mkdir -p .temp
+
+	sed "s/XXX_USER/$user/g" git.conf > .temp/$domain.conf.1
+	sed "s/XXX_DOMAIN/$domain/g" .temp/$domain.conf.1 > .temp/$domain.conf.2
+
+	cp -f .temp/$domain.conf.2 /etc/nginx/sites-available/$domain.conf
+	ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/.
+	service nginx restart
+	echo "------------------------"
+	echo "nginx Config Complete"
+	echo ""
+}
+
+setup_test_repo () {
+	mkdir -p ~/$repo
+	cd ~/$repo
+	git config --global user.email "$user@$domain"
+	git config --global user.name "$user@$domain/$repo"
+	git config --global core.editor vim
+	git init
+	git remote add origin http://$user@$domain/$repo.git
+	touch first_file
+	git add .
+	git commit -m 'first_file'
+	git push origin master
+}
+
+setup_git_server () {
+	prereq
+	setup_git
+	setup_nginx
+	setup_test_repo
+
+	echo "where do we go now?"
+}
+
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+then
+	echo ""
+	echo "./setup_git_server username domain/ip repository-name"
+	echo ""
+	exit 1
+else
+	echo ""
+	read -p "user: $user domain: $domain repository-name: $repo serverip: $serverip"
+	echo ""
+	setup_git_server
+	exit 0
+fi

@@ -1,0 +1,20 @@
+[Unit]
+Description=XXX_DOMAIN Puma Rails Server
+After=nginx.service
+Requires=nginx.service
+
+[Service]
+Type=simple
+User=XXX_USER
+Group=XXX_USER
+Environment=RAILS_ENV=development
+Environment=PATH=/var/www/XXX_USER/.rbenv/shims:/var/www/XXX_USER/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+WorkingDirectory=/var/www/XXX_USER/XXX_USER
+ExecStart=/var/www/XXX_USER/XXX_USER/start_dev_puma
+#ExecStart=/var/www/XXX_USER/.rbenv/bin/rbenv exec bundle exec puma -C /var/www/XXX_USER/XXX_USER/config/puma.rb
+#ExecStop=/var/www/XXX_USER/.rbenv/bin/rbenv exec bundle exec pumactl -S /var/www/XXX_USER/XXX_USER/tmp/goodasnu.state stop
+TimeoutSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

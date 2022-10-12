@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mkdir -p /var/www/XXX_USER/XXX_USER/tmp/sockets
+
+RAILS_ENV=development /var/www/XXX_USER/.rbenv/versions/3.1.2/bin/bundle exec /var/www/XXX_USER/.rbenv/versions/3.1.2/bin/puma -e development -b unix:///var/www/XXX_USER/XXX_USER/tmp/sockets/puma.sock -S /var/www/XXX_USER/XXX_USER/tmp/XXX_USER.state
