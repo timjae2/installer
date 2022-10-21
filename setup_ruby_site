@@ -9,7 +9,7 @@ prereq () {
 	echo ""
 	echo "Setup Prerequisites"
 	echo "------------------------"
-	apt update && apt -y install nginx default-mysql-server git apg libssl-dev ucommon-utils build-essential default-libmysqlclient-dev
+	apt update && apt -y install nginx mysql-server git apg libssl-dev ucommon-utils build-essential libmysqlclient-dev
 	mkdir .temp
 	cp -f vimrc /etc/vim/.
 	cp -f sshd_config /etc/ssh/.

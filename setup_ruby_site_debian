@@ -3,6 +3,7 @@ user=$1
 domain=$2
 install=$3
 serverip=`hostname -I | cut -d' ' -f1`
+basedir=`pwd`
 
 prereq () {
 	# Setup prerequisites
@@ -10,7 +11,6 @@ prereq () {
 	echo "Setup Prerequisites"
 	echo "------------------------"
 	apt update && apt -y install nginx default-mysql-server git apg libssl-dev ucommon-utils build-essential default-libmysqlclient-dev
-	mkdir .temp
 	cp -f vimrc /etc/vim/.
 	cp -f sshd_config /etc/ssh/.
 	cp -f sudoer_users /etc/sudoers.d/.
@@ -144,6 +144,7 @@ setup_rails_cfg () {
 
 setup_mysql () {
 	pass=`apg -n1 -m12 -a1 | md5sum | cut -d' ' -f1`
+	mkdir -p $basedir/.temp
 	echo ""
 	echo "Setup MySQL Database"
 	echo "------------------------"
@@ -152,10 +153,10 @@ setup_mysql () {
 	mysqladmin create "$user"_prod
 	
 	echo "Adding password $pass"
-	sed "s/XXX_USER/$user/g" create_user.sql > .temp/create_user.sql.1
-	sed "s/XXX_PASS/$pass/g" .temp/create_user.sql.1 > .temp/create_user.sql.2
+	sed "s/XXX_USER/$user/g" create_user_debian.sql > .temp/create_user_debian.sql.1
+	sed "s/XXX_PASS/$pass/g" .temp/create_user_debian.sql.1 > .temp/create_user_debian.sql.2
 
-	mysql -u root < .temp/create_user.sql.2
+	mysql -u root < .temp/create_user_debian.sql.2
 
 	echo "Adding password $pass"
 	sed "s/XXX_USER/$user/g" database.yml > .temp/database.yml.1
