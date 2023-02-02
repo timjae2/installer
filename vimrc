@@ -6,6 +6,7 @@
 " the value of the 'compatible' option.
 
 runtime! debian.vim
+packadd! matchit
 
 " Vim will load $VIMRUNTIME/defaults.vim if the user does not have a vimrc.
 " This happens after /etc/vim/vimrc(.local) are loaded, so it will override
